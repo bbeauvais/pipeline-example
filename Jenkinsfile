@@ -117,16 +117,53 @@ pipeline {
           echo 'Could be print at least 6 times'
       }
     }
-    // stage('FIltered stage') {
-    //   when {
-
-    //   }
-    //   steps {
-    //     sh 'curl http://www.google.com'
-    //   }
-    // }
+    stage('Filtered stage') {
+      // A stage can be filtered depending on some criteria to be executed only on some situation.
+      // If multiple filter are set they all need to be true for the stage to be executed
+      // Exemple : Only execute if the some file have been change, only execute when on specific branch
+      when {
+        beforeAgent : true // Special case of when, with this the expression are evaluated before Jenkins give an agent. It could save some execution time
+        environment name: 'GIT_BRANCH', value 'feature/feature-1' // Execute this step only if environment variable GIT_BRANCH is master
+        expression { return true } // Custom expression that return a boolean, it allow some more complex and out of the box control
+      }
+      steps {
+        sh 'curl http://www.google.com'
+      }
+    }
   }
-  // post {
-
-  // }
+  /*
+  * The post directive allow you to specify some post pipeline action that will be executed no matter what append depending on the job result.
+  * That directive can also be use on stage level. Post stages are like any other stages and can be parameterized, filtered or implemeent the exact same than others.
+  */
+  post {
+    always {
+      echo 'I will always be executed, can be usefull for reporting'
+    }
+    success {
+      echo 'I will be executed at the end if the job is successfull'
+    }
+    failure {
+      echo 'I will be executed at the end if the job fail'
+    }
+    unstable {
+      echo 'I will be executed at the end if the job is unstable (Tests failed, quality gate broke...)'
+    }
+    aborted {
+      echo 'I will be executed at the end if someone interupt the job'
+    }
+    changed {
+      echo 'I will be executed at the end if this job status is different than the previous'
+    }
+    fixed {
+      echo 'I will be exectued at the end if the job status improved from the previous one (was failure and now is success'
+    }
+    regression {
+      echo 'I will be executed at the end of the job status is worst than the previous one (was success and now is failure)'
+    }
+    // The cleanup stage if special, it's like the always but it is executed after every action possible on the job, it is generally used (as is name step) to clean the workspace
+    cleanup {
+      // After any operation clean workspace
+      deleteDir()
+    }
+  }
 }
