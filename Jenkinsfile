@@ -109,7 +109,7 @@ pipeline {
     }
     stage('Simple stage') {
       // Option at the stage level
-      option {
+      options {
         timeout(time: 15, unit: 'MINUTES') //The stage will go to failure state after 15 minutes
         retry(6) // The retry option allow the stage to be retry if it goes in failure or unstable mode
       }
