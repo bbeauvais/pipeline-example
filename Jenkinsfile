@@ -122,9 +122,10 @@ pipeline {
       // If multiple filter are set they all need to be true for the stage to be executed
       // Exemple : Only execute if the some file have been change, only execute when on specific branch
       when {
-        // environment name: 'GIT_BRANCH', value 'feature/feature-1' // Execute this step only if environment variable GIT_BRANCH is master
+        environment name: 'GIT_BRANCH', value : 'feature/feature-1' // Execute this step only if environment variable GIT_BRANCH is master
         expression { return true } // Custom expression that return a boolean, it allow some more complex and out of the box control
-        // beforeAgent : true // Special case of when, with this the expression are evaluated before Jenkins give an agent. It could save some execution time
+        equals expected : 'SUCCESS', actual : currendBuild.previousBuild.result
+        beforeAgent : true // Special case of when, with this the expression are evaluated before Jenkins give an agent. It could save some execution time
       }
       steps {
         sh 'curl http://www.google.com'
