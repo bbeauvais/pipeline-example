@@ -124,11 +124,25 @@ pipeline {
       when {
         environment name: 'GIT_BRANCH', value : 'feature/feature-1' // Execute this step only if environment variable GIT_BRANCH is master
         expression { return true } // Custom expression that return a boolean, it allow some more complex and out of the box control
-        equals expected : 'SUCCESS', actual : currendBuild.previousBuild.result
         beforeAgent true // Special case of when, with this the expression are evaluated before Jenkins give an agent. It could save some execution time
       }
       steps {
         sh 'curl http://www.google.com'
+      }
+    }
+    stage('Ask the user') {
+      options {
+        timeout(time: 10, unit: 'MINUTES')
+      }
+      input {
+        message "Should we continue?"
+        ok "Yes, we should."
+        parameters {
+          string(name: 'PERSON', defaultValue: 'Mr Jenkins', description: 'Who should I say hello to?')
+        }
+      }
+      steps {
+        echo "Hi ${PERSON}"
       }
     }
   }
